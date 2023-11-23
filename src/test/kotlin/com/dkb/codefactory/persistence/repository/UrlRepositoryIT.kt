@@ -13,7 +13,7 @@ import org.testcontainers.junit.jupiter.Testcontainers
 @DataMongoTest
 @Testcontainers
 @ContextConfiguration(classes = [MongoDBTestContainerConfig::class])
-class UrlRepositoryIT {
+internal class UrlRepositoryIT {
 
     @Autowired
     private lateinit var mongoTemplate: MongoTemplate
@@ -50,8 +50,21 @@ class UrlRepositoryIT {
         assertThat(returnedUrl).isEqualTo(savedUrl)
     }
 
+    @Test
+    fun `find url document by fullUrl`() {
+        //Arrange
+        val savedUrl = saveUrl()
+
+        //Act
+        val returnedUrl = urlRepository.findByFullUrl(savedUrl.fullUrl)
+
+        //Assert
+        assertThat(returnedUrl).isNotNull
+        assertThat(returnedUrl).isEqualTo(savedUrl)
+    }
+
     private fun saveUrl(): Url {
-        val urlToSave = Url("longUrl", "shortUrl")
+        val urlToSave = Url("shortUrl", "fullUrl")
         return mongoTemplate.save(urlToSave)
     }
 }

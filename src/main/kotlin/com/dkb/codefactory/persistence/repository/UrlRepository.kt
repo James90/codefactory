@@ -5,5 +5,6 @@ import org.bson.types.ObjectId
 import org.springframework.data.mongodb.repository.MongoRepository
 
 interface UrlRepository : MongoRepository<Url, ObjectId> {
-    fun findByShortUrl(longUrl: String): Url?
+    fun findByShortUrl(shortUrl: String): Url?
+    fun findByFullUrl(fullUrl: String): Url?
 }
