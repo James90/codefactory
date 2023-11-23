@@ -32,7 +32,7 @@ class UrlController(private val urlService: UrlService) {
         @RequestBody
         fullUrlDto: FullUrlDto
     ): ResponseEntity<ShortUrlDto> {
-        val shortUrlDto = urlService.postFullUrl(fullUrlDto.fullUrl)
+        val shortUrlDto = urlService.getShortUrlFromFullUrl(fullUrlDto)
         return ResponseEntity(shortUrlDto, CREATED)
     }
 }

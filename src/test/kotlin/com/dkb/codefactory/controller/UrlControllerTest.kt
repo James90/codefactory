@@ -19,14 +19,13 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import org.testcontainers.shaded.com.google.common.net.MediaType
 
 @WebMvcTest(UrlController::class)
 @AutoConfigureMockMvc(print = MockMvcPrint.SYSTEM_OUT)
 internal class UrlControllerTest {
 
     companion object {
-        const val restPath = "$REST_V1_PATH/url-shortener"
+        const val REST_PATH = "$REST_V1_PATH/url-shortener"
     }
 
     @Autowired
@@ -53,11 +52,11 @@ internal class UrlControllerTest {
         //Arrange
         val shortUrlDto = ShortUrlDto("shortUrl")
         val fullUrlDto = FullUrlDto("fullUrl") //todo move to fixture
-        whenever(urlService.postFullUrl(any())).thenReturn(shortUrlDto)
+        whenever(urlService.getShortUrlFromFullUrl(any())).thenReturn(shortUrlDto)
 
         //Act & Assert
         mockMvc.perform(
-            post(restPath)
+            post(REST_PATH)
                 .content(fullUrlDto.toJsonString())
                 .contentType(APPLICATION_JSON_VALUE)
         )
@@ -83,7 +82,7 @@ internal class UrlControllerTest {
     }
 
     private fun performGetFullUrl() = mockMvc.perform(
-        get(restPath)
+        get(REST_PATH)
             .queryParam("shortUrl", "shortUrl")
             .contentType(APPLICATION_JSON_VALUE)
     )
