@@ -19,8 +19,7 @@ import org.springframework.http.MediaType.*
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 
 @WebMvcTest(UrlController::class)
 @AutoConfigureMockMvc(print = MockMvcPrint.SYSTEM_OUT)
@@ -81,6 +80,21 @@ internal class UrlControllerTest {
             .andExpect(
                 content().string(FullUrlNotFoundException.message(shortUrlDto.shortUrl))
             )
+    }
+
+    @Test
+    fun redirectToFullUrl() {
+        // Arrange
+        val fullUrlDto = FullUrlDto(fullUrl)
+        whenever(urlService.getFullUrlFromShortUrl(any())).thenReturn(fullUrlDto)
+
+        // Act & Assert
+        mockMvc.perform(
+            get("$REST_PATH/redirect")
+                .param("shortUrl", shortUrl)
+        )
+            .andExpect(status().is3xxRedirection)
+            .andExpect(redirectedUrl(fullUrlDto.fullUrl))
     }
 
     private fun performGetFullUrl() = mockMvc.perform(
