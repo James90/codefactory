@@ -1,5 +1,7 @@
 package com.dkb.codefactory.persistence.repository
 
+import UrlFixtures.fullUrl
+import UrlFixtures.shortUrl
 import com.dkb.codefactory.persistence.model.Url
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -64,7 +66,7 @@ internal class UrlRepositoryIT {
     }
 
     private fun saveUrl(): Url {
-        val urlToSave = Url("shortUrl", "fullUrl")
+        val urlToSave = Url(shortUrl, fullUrl)
         return mongoTemplate.save(urlToSave)
     }
 }

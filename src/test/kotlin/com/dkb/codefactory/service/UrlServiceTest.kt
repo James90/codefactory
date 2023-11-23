@@ -12,18 +12,18 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.mockito.kotlin.times
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.mock.mockito.MockBean
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.test.context.junit.jupiter.SpringExtension
 
 @ContextConfiguration(classes = [UrlService::class])
-@ExtendWith(SpringExtension::class, MockitoExtension::class)
+@ExtendWith(SpringExtension::class)
 internal class UrlServiceTest {
 
     @Autowired
@@ -50,7 +50,7 @@ internal class UrlServiceTest {
     @Test
     fun `getUrlFromShortUrl throws exception when shortUrl not found`() {
         assertThrows<FullUrlNotFoundException> {
-            urlService.getFullUrlFromShortUrl(ShortUrlDto("shortUrl"))
+            urlService.getFullUrlFromShortUrl(ShortUrlDto(shortUrl))
         }
     }
 
@@ -60,7 +60,6 @@ internal class UrlServiceTest {
         val shortUrlDto = ShortUrlDto(shortUrl)
 
         whenever(urlShortenerService.generateShortUrl(any())).thenReturn(shortUrlDto)
-        whenever(urlRepository.findByFullUrl(any())).thenReturn(null)
         whenever(urlRepository.save(any<Url>())).thenReturn(url)
 
         //Act
@@ -70,11 +69,10 @@ internal class UrlServiceTest {
         assertEquals(url.shortUrl, returnedShortUrl.shortUrl)
         verify(urlRepository).save(any<Url>())
         verify(urlRepository).findByFullUrl(any())
-
     }
 
     @Test
-    fun `getShortUrlFromFullUrl if fullUrl already exists then return its shortUrl`() {
+    fun `getShortUrlFromFullUrl if fullUrl already exists return its shortUrl`() {
         //Arrange
         whenever(urlRepository.findByFullUrl(any())).thenReturn(url)
 
@@ -84,5 +82,25 @@ internal class UrlServiceTest {
         //Assert
         assertEquals(url.shortUrl, returnedShortUrl.shortUrl)
         verify(urlRepository, never()).save(any())
+    }
+
+    @Test
+    fun `getShortUrlFromFullUrl if shortUrl exists create another one`() {
+        //Arrange
+        whenever(urlShortenerService.generateShortUrl(fullUrl)).thenReturn(ShortUrlDto(shortUrl))
+        whenever(urlRepository.findByShortUrl(any())).thenReturn(url).thenReturn(null)
+
+
+        whenever(urlRepository.save(any<Url>())).thenReturn(url)
+
+        //Act
+        val returnedShortUrl = urlService.getShortUrlFromFullUrl(FullUrlDto(fullUrl))
+
+        //Assert
+        assertEquals(url.shortUrl, returnedShortUrl.shortUrl)
+        verify(urlRepository).findByFullUrl(any())
+        verify(urlShortenerService, times(2)).generateShortUrl(any())
+        verify(urlRepository, times(2)).findByShortUrl(any())
+        verify(urlRepository).save(any<Url>())
     }
 }

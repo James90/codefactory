@@ -29,10 +29,22 @@ class UrlService {
     }
 
     private fun saveUrl(fullUrlDto: FullUrlDto): ShortUrlDto {
-        val shortUrlDto = urlShortenerService.generateShortUrl(fullUrlDto.fullUrl)
+        val shortUrlDto = getUniqueShortUrl(fullUrlDto)
         val urlToSave = createUrl(fullUrlDto, shortUrlDto)
         val savedUrl = urlRepository.save(urlToSave)
         return ShortUrlDto(savedUrl.shortUrl)
+    }
+
+    private fun getUniqueShortUrl(fullUrlDto: FullUrlDto): ShortUrlDto {
+        var shortUrlDto: ShortUrlDto
+        var returnedUrl: Url?
+
+        do {
+            shortUrlDto = urlShortenerService.generateShortUrl(fullUrlDto.fullUrl)
+            returnedUrl = urlRepository.findByShortUrl(shortUrlDto.shortUrl)
+        } while (returnedUrl != null)
+
+        return shortUrlDto
     }
 
     private fun createUrl(fullUrlDto: FullUrlDto, shortUrl: ShortUrlDto): Url {
