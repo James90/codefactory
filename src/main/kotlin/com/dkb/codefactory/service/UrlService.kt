@@ -30,7 +30,7 @@ class UrlService {
 
     private fun saveUrl(fullUrlDto: FullUrlDto): ShortUrlDto {
         val shortUrlDto = getUniqueShortUrl(fullUrlDto)
-        val urlToSave = createUrl(fullUrlDto, shortUrlDto)
+        val urlToSave = createUrl(shortUrlDto, fullUrlDto)
         val savedUrl = urlRepository.save(urlToSave)
         return ShortUrlDto(savedUrl.shortUrl)
     }
@@ -46,8 +46,7 @@ class UrlService {
 
         return shortUrlDto
     }
-
-    private fun createUrl(fullUrlDto: FullUrlDto, shortUrl: ShortUrlDto): Url {
-        return Url(fullUrlDto.fullUrl, shortUrl.shortUrl)
+    private fun createUrl(shortUrl: ShortUrlDto, fullUrlDto: FullUrlDto): Url {
+        return Url(shortUrl.shortUrl, fullUrlDto.fullUrl)
     }
 }

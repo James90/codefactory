@@ -1,5 +1,7 @@
 package com.dkb.codefactory.controller
 
+import UrlFixtures.fullUrl
+import UrlFixtures.shortUrl
 import com.dkb.codefactory.CodefactoryApplication.Companion.REST_V1_PATH
 import com.dkb.codefactory.dto.FullUrlDto
 import com.dkb.codefactory.dto.ShortUrlDto
@@ -37,7 +39,7 @@ internal class UrlControllerTest {
     @Test
     fun getFullUrl() {
         //Arrange
-        val fullUrlDto = FullUrlDto("fullUrl")
+        val fullUrlDto = FullUrlDto(fullUrl)
         whenever(urlService.getFullUrlFromShortUrl(any())).thenReturn(fullUrlDto)
 
         //Act & Assert
@@ -50,8 +52,8 @@ internal class UrlControllerTest {
     @Test
     fun postFullUrl() {
         //Arrange
-        val shortUrlDto = ShortUrlDto("shortUrl")
-        val fullUrlDto = FullUrlDto("fullUrl") //todo move to fixture
+        val shortUrlDto = ShortUrlDto(shortUrl)
+        val fullUrlDto = FullUrlDto(fullUrl)
         whenever(urlService.getShortUrlFromFullUrl(any())).thenReturn(shortUrlDto)
 
         //Act & Assert
@@ -69,7 +71,7 @@ internal class UrlControllerTest {
 
     @Test
     fun `returns not found when URL cannot be found`() {
-        val shortUrlDto = ShortUrlDto("shortUrl")
+        val shortUrlDto = ShortUrlDto(shortUrl)
         whenever(urlService.getFullUrlFromShortUrl(any())).thenThrow(FullUrlNotFoundException(shortUrlDto.shortUrl))
 
         //Act
@@ -83,7 +85,7 @@ internal class UrlControllerTest {
 
     private fun performGetFullUrl() = mockMvc.perform(
         get(REST_PATH)
-            .queryParam("shortUrl", "shortUrl")
+            .queryParam(shortUrl, shortUrl)
             .contentType(APPLICATION_JSON_VALUE)
     )
 
