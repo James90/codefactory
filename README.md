@@ -11,6 +11,14 @@ Packaging can be omitted using the zip from greenhouse. It already contains the 
 
 This will create two containers in a network: the url shortener service and a mongoDB database.
 
+### Running the app locally
+
+If you'd like to run the app locally, you can start a container running docker for it to connect to:
+
+   ``` 
+    docker run -d -p 27017:27017 --name mongodb mongo:latest
+   ```
+
 ### Testing the app
 
    ``` 
@@ -58,6 +66,9 @@ I would parameterize the database credentials and inject them at deployment from
 - User authorization and ownership: after adding OAuth2, I would add a user id to the URL document to provide more
   functionality to the owner.
 
+- Different environments: I would use the application.properties files to inherit and override/add properties for
+  different environments
+
 - Caching: resolving a short URL would be the most frequent operation, so I would cache like Caffeine to cache
   frequently accessed urls, in particular, for `getFullUrlFromShortUrl` in the `UrlService`.
 
@@ -65,8 +76,11 @@ I would parameterize the database credentials and inject them at deployment from
   it already exists it creates another until it finds one that has not been used. In a subsequent version I'd implement
   a more robust solution.
 
+- In a subsequent version I'd document the controller using a tool like Swagger.
+
 - I am using Spring's actuator to provide an `/actuator/health` endpoint to be monitored by a load balancer.
 
 - The service starts slowly the first time it's run because all the dependencies have to be downloaded. To mitigate
   this,
   I would create an image to create instances that have all the resources they need. An AWS AMI, for example.
+- Dependency updates: before going to production I'd use renovate to automate dependency updates.

@@ -29,7 +29,7 @@ class UrlController(private val urlService: UrlService) {
     }
 
     @GetMapping("/redirect")
-    fun redirect(
+    fun redirectToFullUrl(
         @RequestParam(name = "shortUrl", required = true)
         shortUrl: ShortUrlDto
     ): RedirectView {
