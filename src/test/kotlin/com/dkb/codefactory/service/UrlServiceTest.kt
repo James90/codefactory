@@ -32,7 +32,7 @@ internal class UrlServiceTest {
     private lateinit var urlShortenerService: UrlShortenerService
 
     @Test
-    fun getUrlFromShortUrl() {
+    fun getFullUrlFromShortUrl() {
         //Arrange
         whenever(urlRepository.findByShortUrl(any())).thenReturn(url)
 
@@ -81,7 +81,7 @@ internal class UrlServiceTest {
     }
 
     @Test
-    fun `getShortUrlFromFullUrl if shortUrl exists create another one`() {
+    fun `getShortUrlFromFullUrl if shortUrl already exists create another one`() {
         //Arrange
         whenever(urlShortenerService.generateShortUrl(fullUrl)).thenReturn(ShortUrlDto(shortUrl))
         whenever(urlRepository.findByShortUrl(any())).thenReturn(url).thenReturn(null)
