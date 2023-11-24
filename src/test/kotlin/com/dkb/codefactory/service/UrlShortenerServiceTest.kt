@@ -17,16 +17,31 @@ internal class UrlShortenerServiceTest {
 
     @Test
     fun `generateShortUrl generates unique ShortUrlDtos`() {
-
+        //Arrange
         val fullUrl1 = "https://www.example.com"
         val fullUrl2 = "https://www.example.org"
 
+        //Act
         val shortUrlDto1 = urlShortenerService.generateShortUrl(fullUrl1)
         val shortUrlDto2 = urlShortenerService.generateShortUrl(fullUrl2)
 
+        //Assert
         assertEquals(7, shortUrlDto1.shortUrl.length)
         assertEquals(7, shortUrlDto2.shortUrl.length)
 
+        assertNotEquals(shortUrlDto1.shortUrl, shortUrlDto2.shortUrl)
+    }
+
+    @Test
+    fun `generateShortUrl generates different shortUrls for same URL`() {
+        //Arrange
+        val fullUrl = "https://www.example.org"
+
+        //Act
+        val shortUrlDto1 = urlShortenerService.generateShortUrl(fullUrl)
+        val shortUrlDto2 = urlShortenerService.generateShortUrl(fullUrl)
+
+        //Assert
         assertNotEquals(shortUrlDto1.shortUrl, shortUrlDto2.shortUrl)
     }
 }
